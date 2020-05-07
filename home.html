@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>SpringFestival</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<style>
+    body{
+    background-color:#a5c2b9;
+  }
+  .afis{
+    margin-top:100px;
+    margin-left:50px;
+    margin-right:50px;
+    text-align:center;
+    boder-box:1px solid black;
+    box-shadow:0px 0px 9px black;
+    background-color:#2db58c;
+    color:white;
+    padding-top:20px;
+
+  }
+  .inner{
+    margin-top:20px;
+
+    background-color:white;
+
+  }
+  .formular{
+    color:black;
+    margin-right:50px;
+    margin-left:50px;
+  }
+  .btn-info{
+    height:70px;
+  }
+
+</style>
+   
+</head>
+
+  <body>
+    <div class="afis" >
+
+      <h1>SpringFestival - Here are the best artists</h1>
+      <div class="inner" ng-app="myApp" ng-controller="getAll">
+<br>
+
+  <input type="text" class="form-control" ng-model="filtru" name="" value="" placeholder=" &#x2315; cauta">
+<br><br>
+
+<br>
+        <table class="table">
+
+          <thead class="thead-light">
+            <th>ID</th>
+            <th>Nume</th>
+            <th>Gen Muzical</th>
+            <th>Rating Spotify</th><th><a href="home.html">&#8635;</a>  Refresh</th>
+          </thead>
+
+          <tbody>
+            <tr ng-repeat="x in data | filter:filtru | orderBy:'-ratingSpotify'">
+              <td>{{x.id}}</td>
+              <td>{{x.nume}}</td>
+              <td>{{x.genMuzical}}</td>
+              <td>{{x.ratingSpotify}}</td>
+              <td> &ensp; <button ng-click="delete(x.id)" class="btn btn-danger" type="button" name="button">Sterge</button> </td>
+            </tr>
+          </tbody>
+
+        </table>
+<br><br>
+
+        <div class="formular"><br><br>
+          <h3>Adauga artist</h3><br>
+          <input class="form-control" ng-model="nume" type="text" name="nume" placeholder="nume"><br>
+          <input class="form-control" ng-model="genMuzical" type="text" name="gen" placeholder="genMuzical"><br>
+          <input class="form-control" ng-model="ratingSpotify" type="text" name="rating" placeholder="rating 1-10"><br><br>
+          <button class="btn btn-info btn-block" ng-click="add(nume, genMuzical, ratingSpotify)" type="button" name="button">Adauga</button><br><br>
+        </div>
+
+    </div></div>
+<br><br><br><br>
+
+    <script>
+        var app = angular.module("myApp",[]);
+app.controller("getAll", function($scope, $http){
+
+  //get all
+  $scope.getAll = function(){
+    $http.get('/artists/').then(function(response){
+      $scope.data = response.data.records;
+      console.log($scope.data);
+    });
+  };
+
+  $scope.getAll();
+
+  //add
+  $scope.add = function(nume, genMuzical, ratingSpotify){
+    var url = "/artists";
+
+    console.log(nume);console.log(genMuzical);console.log(ratingSpotify);
+    if (nume == "" || genMuzical=="" || isNaN(ratingSpotify)){
+      alert("Nu-i ok...completeaza formularul");
+      return;
+    }
+    var params = {"nume":nume, "genMuzical":genMuzical, "ratingSpotify":ratingSpotify};
+    console.log(params);
+
+    var config = {
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    }
+
+    $http.post(url, params, config).then(function(data, status, headers, config){
+      $scope.getAll();
+    });
+
+};
+
+
+  //delete
+  $scope.delete = function(id){
+    var url = "/artists/" + id;
+    console.log(url);
+    $http.delete(url).then(function(response){
+      console.log(response);
+      $scope.getAll();
+   });
+  };
+
+
+});
+
+ </script>
+
+  </body>
+</html>
